@@ -1,12 +1,17 @@
 package com.example.yizhangcao.mobilekeyboard;
 
 import android.graphics.Color;
+import android.os.Handler;
+import android.support.constraint.ConstraintLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.KeyEvent;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
+import android.widget.Toolbar;
 
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -35,12 +40,17 @@ public class MainKeyboardActivity extends AppCompatActivity {
 
     private boolean isConnected;
 
-
     private Button connectButton;
     private Button disconnectButton;
+
+    private Button leftClick;
+    private Button rightClick;
+
     private static final String SECRET_CODE = "Simple_Key";
 
     private LinearLayout verticalLayout;
+
+    private Toolbar myToolBar;
 
     private final class EchoWebSocketListener extends WebSocketListener {
         private static final int NORMAL_CLOSURE_STATUS = 1000;
@@ -88,7 +98,12 @@ public class MainKeyboardActivity extends AppCompatActivity {
 
         verticalLayout = (LinearLayout) findViewById(R.id.vLayout);
 
+        leftClick = (Button) findViewById(R.id.leftmouse);
+        rightClick = (Button) findViewById(R.id.rightmouse);
+
         client = new OkHttpClient();
+
+//        myToolBar = (Toolbar) findViewById(R.id.my_toolbar);
 
         connectButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -115,6 +130,26 @@ public class MainKeyboardActivity extends AppCompatActivity {
             }
         });
 
+        leftClick.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (isConnected){
+                    ws.send("LClick");
+                }
+            }
+        });
+
+        rightClick.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (isConnected){
+                    ws.send("RClick");
+                }
+            }
+        });
+
+
+
         try {
             InputStream iStream = getResources().openRawResource(R.raw.keylayout);
             BufferedReader bReader = new BufferedReader(new InputStreamReader(iStream));
@@ -126,115 +161,29 @@ public class MainKeyboardActivity extends AppCompatActivity {
 
         }
 
-//        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT, 1.0f);
-//        params.setMargins(1,1,1,1);
-//        LinearLayout.LayoutParams paramsS = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT, 0.6f);
-//        paramsS.setMargins(1,1,1,1);
-//        // Setting up Horizontal Layout
-//        LinearLayout horizontalLayout = new LinearLayout(this);
-//        horizontalLayout.setOrientation(LinearLayout.HORIZONTAL);
-//        horizontalLayout.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT, 1.0f));
-//        Button buttonOne = new Button(this);
-//        buttonOne.setBackgroundColor(Color.GRAY);
-//        buttonOne.setText("`");
-//        buttonOne.setLayoutParams(params);
-//        buttonOne.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                if (isConnected)
-//                    ws.send("" + (192));
-//            }
-//        });
-//        horizontalLayout.addView(buttonOne);
-//        for (int j = 0; j < 9; j++){
-//            final int jVal = j;
-//            Button button = new Button(this);
-//            button.setBackgroundColor(Color.GRAY);
-////                button.setTextSize(7);
-//            button.setText(String.valueOf(j+1));
-//            button.setLayoutParams(params);
-//            button.setOnClickListener(new View.OnClickListener() {
-//                @Override
-//                public void onClick(View v) {
-//                    if (isConnected)
-//                        ws.send("" + (jVal + 49));
-//                }
-//            });
-//            horizontalLayout.addView(button);
-//        }
-//        Button button = new Button(this);
-//        button.setBackgroundColor(Color.GRAY);
-////            button.setTextSize(7);
-//        button.setText(String.valueOf(0));
-//        button.setLayoutParams(params);
-//        button.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                if (isConnected)
-//                    ws.send("48");
-//            }
-//        });
-//        horizontalLayout.addView(button);
-//        Button buttonDash = new Button(this);
-//        buttonDash.setBackgroundColor(Color.GRAY);
-////            button.setTextSize(7);
-//        buttonDash.setText("-");
-//        buttonDash.setLayoutParams(params);
-//        buttonDash.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                if (isConnected)
-//                    ws.send("189");
-//            }
-//        });
-//        horizontalLayout.addView(buttonDash);
-//        Button buttonPlus = new Button(this);
-//        buttonPlus.setBackgroundColor(Color.GRAY);
-////            button.setTextSize(7);
-//        buttonPlus.setText("=");
-//        buttonPlus.setLayoutParams(params);
-//        buttonPlus.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                if (isConnected)
-//                    ws.send("187");
-//            }
-//        });
-//        horizontalLayout.addView(buttonPlus);
-//        Button buttonDelete = new Button(this);
-//        buttonDelete.setBackgroundColor(Color.GRAY);
-////            button.setTextSize(7);
-//        buttonDelete.setText("Delete");
-//        buttonDelete.setLayoutParams(paramsS);
-//        buttonDelete.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                if (isConnected)
-//                    ws.send("8");
-//            }
-//        });
-//        horizontalLayout.addView(buttonDelete);
-//        verticalLayout.addView(horizontalLayout);
-//
-//        LinearLayout horizontalLayoutTwo = new LinearLayout(this);
-//        horizontalLayoutTwo.setOrientation(LinearLayout.HORIZONTAL);
-//        horizontalLayoutTwo.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT, 1.0f));
-//        Button buttonTab = new Button(this);
-//        buttonTab.setBackgroundColor(Color.GRAY);
-//        buttonTab.setText("Tab");
-//        buttonTab.setLayoutParams(paramsS);
-//        buttonTab.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                if (isConnected)
-//                    ws.send("" + 9);
-//            }
-//        });
-//        horizontalLayoutTwo.addView(buttonTab);
-//
-//
-//
-//        verticalLayout.addView(horizontalLayoutTwo);
+    }
+
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        int x = (int) event.getX();
+        int y = (int) event.getY();
+
+        switch (event.getAction()) {
+            case MotionEvent.ACTION_DOWN:
+                Log.i("TAG", "touched down");
+                break;
+            case MotionEvent.ACTION_MOVE:
+                Log.i("TAG", "moving: (" + x + ", " + y + ")");
+                if (isConnected){
+                    ws.send(x + "," + y);
+                }
+                break;
+            case MotionEvent.ACTION_UP:
+                Log.i("TAG", "touched up");
+                break;
+        }
+
+        return true;
     }
 
     public void loadKeyBoardFrom (BufferedReader reader){
@@ -244,12 +193,26 @@ public class MainKeyboardActivity extends AppCompatActivity {
 
         LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT, 1.0f);
         params.setMargins(1,1,1,1);
-        LinearLayout.LayoutParams paramsS = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT, 0.6f);
+        LinearLayout.LayoutParams paramsS = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT, 0.8f);
         paramsS.setMargins(1,1,1,1);
+        LinearLayout.LayoutParams paramsM = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT, 0.4f);
+        paramsM.setMargins(1,1,1,1);
+        LinearLayout.LayoutParams paramsL = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT, 0.1f);
+        paramsL.setMargins(1,1,1,1);
+        LinearLayout.LayoutParams paramsXL = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT, 0.05f);
+        paramsXL.setMargins(1,1,1,1);
+        LinearLayout.LayoutParams paramsXS = new LinearLayout.LayoutParams(1, LinearLayout.LayoutParams.WRAP_CONTENT, 1.0f);
+        paramsXS.setMargins(1,1,1,1);
+
         // Setting up Horizontal Layout
 
         final String XML_ROW = "Row";
         final String XML_KEY = "Key";
+        final String SIZE_XS = "XS";
+        final String SIZE_S = "S";
+        final String SIZE_M = "M";
+        final String SIZE_L = "L";
+        final String SIZE_XL = "XL";
 
         try {
             factory = XmlPullParserFactory.newInstance();
@@ -274,16 +237,63 @@ public class MainKeyboardActivity extends AppCompatActivity {
                         if (tagname.equalsIgnoreCase(XML_KEY)) {
                             Log.i(TAG, xpp.getAttributeValue(1));
                             final KeyButton button = new KeyButton(this, xpp.getAttributeValue(0));
+                            if (xpp.getAttributeValue(2).equalsIgnoreCase(SIZE_S)){
+                                button.setLayoutParams(paramsS);
+                            } else if (xpp.getAttributeValue(2).equalsIgnoreCase(SIZE_M)) {
+                                button.setLayoutParams(paramsM);
+                            } else if (xpp.getAttributeValue(2).equalsIgnoreCase(SIZE_L)) {
+                                button.setLayoutParams(paramsL);
+                            } else if (xpp.getAttributeValue(2).equalsIgnoreCase(SIZE_XL)) {
+                                button.setLayoutParams(paramsXL);
+                            } else if (xpp.getAttributeValue(2).equalsIgnoreCase(SIZE_XL)) {
+                                button.setLayoutParams(paramsXS);
+                            }
+                            else {
+                                button.setLayoutParams(params);
+                            }
+                            if (button.getKeyCode().equalsIgnoreCase("null")){
+                                button.setEnabled(false);
+                            }
                             button.setBackgroundColor(Color.GRAY);
-                    //            button.setTextSize(7);
+                            button.setTextSize(7);
                             button.setText(xpp.getAttributeValue(1));
-                            button.setLayoutParams(params);
+//                            button.setLayoutParams(params);
                             button.setOnClickListener(new View.OnClickListener() {
                                 @Override
-                                public void onClick(View v) {
+                                public void onClick(View view) {
                                     if (isConnected)
-                                        ws.send(button.getKeyCode());
+                                        ws.send(button.getKeyCode()+"&");
                                 }
+                            });
+                            button.setOnTouchListener(new View.OnTouchListener() {
+
+                                private Handler mHandler;
+
+                                @Override public boolean onTouch(View v, MotionEvent event) {
+                                    switch(event.getAction()) {
+                                        case MotionEvent.ACTION_DOWN:
+                                            if (mHandler != null) return true;
+                                            mHandler = new Handler();
+                                            mHandler.postDelayed(mAction, 500);
+                                            break;
+                                        case MotionEvent.ACTION_UP:
+                                            if (mHandler == null) return true;
+                                            mHandler.removeCallbacks(mAction);
+                                            mHandler = null;
+                                            break;
+                                    }
+                                    return false;
+                                }
+
+                                Runnable mAction = new Runnable() {
+                                    @Override public void run() {
+                                        if (isConnected) {
+                                            ws.send(button.getKeyCode());
+                                            mHandler.postDelayed(this, 100);
+                                        }
+                                    }
+                                };
+
                             });
                             horizontalLayout.addView(button);
 
